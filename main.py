@@ -108,21 +108,40 @@ for folder_path in folder_path_covid:
 # "NON-COVID"
 folder_path_non_covid =[
     "dataset/train/Normal",
+]
+
+# "LUNG-OPACITY"
+folder_path_lung_opacity =[
     "dataset/train/Lung opacity",
+]
+
+# "VIRAL-PNEUMONIA"
+folder_path_viral_pneumonia =[
     "dataset/train/Viral Pneumonia",
 ]
+
 
 
 img_path_non_covid_old =[]
 for folder_path in folder_path_non_covid:
     file_add_to_array(folder_path,img_path_non_covid_old)
+
+img_path_lung_old =[]
+for folder_path in folder_path_lung_opacity:
+    file_add_to_array(folder_path,img_path_lung_old)
+
+img_path_neu_old =[]
+for folder_path in folder_path_viral_pneumonia:
+    file_add_to_array(folder_path,img_path_neu_old)
     
 
 covid_images_on_data_set = len(img_path_covid_old)
 covid_non_images_on_data_set = len(img_path_non_covid_old)
-Total_images_on_data_set = covid_images_on_data_set + covid_non_images_on_data_set
+lung_opacity = len(img_path_lung_old)
+viral_pneumonia = len(img_path_neu_old)
+Total_images_on_data_set = covid_images_on_data_set + covid_non_images_on_data_set + lung_opacity + viral_pneumonia
 
-print(f" Total Images on the data set : {Total_images_on_data_set}\n Covid Images : {covid_images_on_data_set}\n Non Covid Images : {covid_non_images_on_data_set}\n")    
+print(f" Total Images on the data set : {Total_images_on_data_set}\n Covid Images : {covid_images_on_data_set}\n Non Covid Images : {covid_non_images_on_data_set}\n Lung : {covid_non_images_on_data_set}\n Neumonia : {covid_non_images_on_data_set}")    
         
 # images array shuffles
 img_path_covid_old = random.sample(img_path_covid_old, len(img_path_covid_old))
@@ -145,102 +164,102 @@ print(f"All images count       : {total_images}")
 print(f"Covid images           : {round((len(img_path_covid)/total_images)*100, 2)} %")           
 print(f"Non covid images       : {round((len(img_path_non_covid)/total_images)*100, 2)} %")  
 
-start_time = datetime.datetime.now()
-print(f"Start images reading :{start_time}")
-img_size=256
-data=[]
-target=[]
+# start_time = datetime.datetime.now()
+# print(f"Start images reading :{start_time}")
+# img_size=256
+# data=[]
+# target=[]
 
-def image_add(img_path,category) :
-    img=cv2.imread(img_path)
-    try:
-        gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)           
-                    #Coverting the image into gray scale
-        resized=cv2.resize(gray,(img_size,img_size))
-                    #resizing the gray scale into 256x256, since we need a fixed common size for all the images in the dataset
-        data.append(resized)
-        target.append(label_dict[category])
-                    #appending the image and the label(categorized) into the list (dataset)
+# def image_add(img_path,category) :
+#     img=cv2.imread(img_path)
+#     try:
+#         gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)           
+#                     #Coverting the image into gray scale
+#         resized=cv2.resize(gray,(img_size,img_size))
+#                     #resizing the gray scale into 256x256, since we need a fixed common size for all the images in the dataset
+#         data.append(resized)
+#         target.append(label_dict[category])
+#                     #appending the image and the label(categorized) into the list (dataset)
 
-    except Exception as e:
-        print('Exception:',e)
-                    #if any exception rasied, the exception will be printed here. And pass to the next image   
+#     except Exception as e:
+#         print('Exception:',e)
+#                     #if any exception rasied, the exception will be printed here. And pass to the next image   
 
-for category in categories:
-    if(category == "COVID-19"):
-        for img_path in img_path_covid:
-            image_add(img_path,category)  
-    else:
-        for img_path in img_path_non_covid:
-            image_add(img_path,category)  
+# for category in categories:
+#     if(category == "COVID-19"):
+#         for img_path in img_path_covid:
+#             image_add(img_path,category)  
+#     else:
+#         for img_path in img_path_non_covid:
+#             image_add(img_path,category)  
 
                     
-end_time = datetime.datetime.now()                 
-print(f"End images reading :{end_time}")
+# end_time = datetime.datetime.now()                 
+# print(f"End images reading :{end_time}")
 
-print(f"Total time taken {end_time-start_time}")
+# print(f"Total time taken {end_time-start_time}")
 
-data=np.array(data)/255.0
-data=np.reshape(data,(data.shape[0],img_size,img_size,1))
-target=np.array(target)
-
-
-new_target=keras.utils.to_categorical(target)
+# data=np.array(data)/255.0
+# data=np.reshape(data,(data.shape[0],img_size,img_size,1))
+# target=np.array(target)
 
 
-print(f"Data shape : {data.shape} \nTarget shape : {target.shape} \nNew Target shape : {new_target.shape}")
+# new_target=keras.utils.to_categorical(target)
 
-input_shape=data.shape[1:] #50,50,1
-inp=Input(shape=input_shape)
-convs=[]
 
-parrallel_kernels=[3,5,7,9]
+# print(f"Data shape : {data.shape} \nTarget shape : {target.shape} \nNew Target shape : {new_target.shape}")
 
-for k in range(len(parrallel_kernels)):
-    if(k !=0):
-        conv = Conv2D(128, kernel_size = k,padding = 'same' ,activation='relu')(inp)
+# input_shape=data.shape[1:] #50,50,1
+# inp=Input(shape=input_shape)
+# convs=[]
 
-        convs.append(conv)
+# parrallel_kernels=[3,5,7,9]
 
-out = Concatenate()(convs)
-conv_model = Model(inp, out)
+# for k in range(len(parrallel_kernels)):
+#     if(k !=0):
+#         conv = Conv2D(128, kernel_size = k,padding = 'same' ,activation='relu')(inp)
 
-model = Sequential()
-model.add(conv_model)
+#         convs.append(conv)
 
-# Hidden Layer 1
-model.add(Conv2D(128,(3,3)))
-model.add(Activation('relu'))
-model.add(MaxPool2D(pool_size=(2,2)))
+# out = Concatenate()(convs)
+# conv_model = Model(inp, out)
 
-# Hidden Layer 2
-model.add(Conv2D(64,(3,3)))
-model.add(Activation('relu'))
-model.add(MaxPool2D(pool_size=(2,2)))
+# model = Sequential()
+# model.add(conv_model)
 
-# Hidden Layer 3
-model.add(Conv2D(32,(3,3)))
-model.add(Activation('relu'))
-model.add(MaxPool2D(pool_size=(2,2)))
+# # Hidden Layer 1
+# model.add(Conv2D(128,(3,3)))
+# model.add(Activation('relu'))
+# model.add(MaxPool2D(pool_size=(2,2)))
 
-# Output layer
-model.add(Flatten())
-model.add(Dropout(0.5))
-model.add(Dense(128,activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(64,activation='relu'))
-model.add(Dropout(0.25))
-model.add(Dense(4,input_dim=128,activation='sigmoid'))
+# # Hidden Layer 2
+# model.add(Conv2D(64,(3,3)))
+# model.add(Activation('relu'))
+# model.add(MaxPool2D(pool_size=(2,2)))
 
-model.compile(loss='sparse_categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
+# # Hidden Layer 3
+# model.add(Conv2D(32,(3,3)))
+# model.add(Activation('relu'))
+# model.add(MaxPool2D(pool_size=(2,2)))
 
-model.summary()
+# # Output layer
+# model.add(Flatten())
+# model.add(Dropout(0.5))
+# model.add(Dense(128,activation='relu'))
+# model.add(Dropout(0.5))
+# model.add(Dense(64,activation='relu'))
+# model.add(Dropout(0.25))
+# model.add(Dense(4,input_dim=128,activation='sigmoid'))
 
-train_data,test_data,train_target,test_target=train_test_split(data,target,test_size=0.3)
+# model.compile(loss='sparse_categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
 
-print(type (train_data))
-print(f"Training Data shape : {train_data.shape} \nTraining Target shape : {train_target.shape}")
-print(f"Test Data shape : {test_data.shape} \nTest Target shape : {test_target.shape}")
+# model.summary()
+
+# train_data,test_data,train_target,test_target=train_test_split(data,target,test_size=0.3)
+
+# print(type (train_data))
+# print(f"Training Data shape : {train_data.shape} \nTraining Target shape : {train_target.shape}")
+# print(f"Test Data shape : {test_data.shape} \nTest Target shape : {test_target.shape}")
 
 # start_time = datetime.datetime.now()
 # print(f"Start checkpoint creation:{start_time}")
@@ -292,7 +311,7 @@ print(f"Test Data shape : {test_data.shape} \nTest Target shape : {test_target.s
 # plt.figure()
 # plt.show()
 
-print(model.evaluate(test_data,test_target))
+#print(model.evaluate(test_data,test_target))
 
 # cantidaDatosEntrenamiento = [60, 60, 60, 60, 60, 60, 60, 60, 60, 60]
 # cantidaDatosPruebas = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
