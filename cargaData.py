@@ -13,7 +13,7 @@ def cargar_datos(ruta_origen,nombre_categorias,limite,ancho,alto):
     for categoria in nombre_categorias:
         for id_imagen in range(0,limite[index]):
             ruta=ruta_origen+str(categoria)+"/"+str(id_imagen)+".png"
-            print(ruta)
+            #print(ruta)
             imagen = cv2.imread(ruta)
             imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY) # convierte la imagen a escala de grises
             imagen = cv2.resize(imagen, (ancho, alto)) # Redimensiona la imagen al ancho y alto configurado
@@ -35,7 +35,7 @@ def cargar_datos_pruebas(ruta_origen,nombre_categorias,limite, limite_inferior,a
     for categoria in nombre_categorias:
         for id_imagen in range(limite_inferior[index],limite[index]):
             ruta=ruta_origen+str(categoria)+"/"+str(id_imagen)+".png"
-            print(ruta)
+            #print(ruta)
             imagen = cv2.imread(ruta)
             imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY) # convierte la imagen a escala de grises
             imagen = cv2.resize(imagen, (ancho, alto)) # Redimensiona la imagen al ancho y alto configurado

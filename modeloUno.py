@@ -17,11 +17,11 @@ formaImagen=(ancho,alto,numeroCanales)
 nombreCategorias= ['COVID','Lung Opacity','Normal','Viral Pneumonia']
 
 #configuracion de las imagenes, en este caso 60 de entrenamiento y 20 de pruebas (para el número de categorías)
-# cantidaDatosEntrenamiento=[6996,6571,6571,4292] 
-# cantidaDatosPruebas=[8745,8214,8214,5365]
+cantidaDatosEntrenamiento=[6996,6571,6571,4292] 
+cantidaDatosPruebas=[8745,7674,8214,5365]
 
-cantidaDatosEntrenamiento=[3000,3000,3000,3000] 
-cantidaDatosPruebas=[4000,4000,4000,4000]
+# cantidaDatosEntrenamiento=[3000,3000,3000,3000] 
+# cantidaDatosPruebas=[4000,4000,4000,4000]
 
 #Cargar las imágenes
 imagenes, probabilidades= cargaData.cargar_datos("dataset/train/",nombreCategorias,cantidaDatosEntrenamiento,ancho,alto)
@@ -61,7 +61,7 @@ model.add(Dense(len(nombreCategorias),activation="softmax"))
 model.compile(optimizer="adam",loss="categorical_crossentropy", metrics=["accuracy"])
 
 #Entrenamiento
-model.fit(x=imagenes,y=probabilidades,epochs=20,batch_size=150)
+model.fit(x=imagenes,y=probabilidades,epochs=20,batch_size=800)
 
 #Prueba del modelo
 imagenesPrueba,probabilidadesPrueba= cargaData.cargar_datos_pruebas("dataset/test/",nombreCategorias,cantidaDatosPruebas, cantidaDatosEntrenamiento,ancho,alto)
@@ -69,7 +69,7 @@ resultados=model.evaluate(x=imagenesPrueba,y=probabilidadesPrueba)
 print("Accuracy=",resultados[1])
 
 # Guardar modelo
-ruta="models/modeloA.h5"
+ruta="models/modeloUno.h5"
 model.save(ruta)
 # Informe de estructura de la red
 model.summary()
