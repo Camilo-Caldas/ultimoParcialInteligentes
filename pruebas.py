@@ -6,7 +6,7 @@ clases=["COVID","LUNG OPACITY","NORMAL","VIRAL PNEUMONIA"]
 ancho = 256
 alto = 256
 
-miModeloCNN=prediccion("models/modeloUno.h5",ancho,alto)
+miModeloCNN=prediccion("models/modeloDos.h5",ancho,alto)
 imagen=cv2.imread("dataset/test/Viral Pneumonia/5000.png")
 
 claseResultado=miModeloCNN.predecir(imagen)
