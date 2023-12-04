@@ -1,6 +1,8 @@
 import os
-
-carpeta = 'dataset/train/Viral Pneumonia'  # Reemplaza con la ruta de tu carpeta
+#Lung opacity
+#Normal
+#Viral Pneumonia
+carpeta = 'dataset/test/Viral Pneumonia'  # Reemplaza con la ruta de tu carpeta
 
 # Obtener la lista de archivos en la carpeta
 archivos = os.listdir(carpeta)
