@@ -17,7 +17,7 @@ cantidaDatosPruebas = [8745, 7674, 8214, 5365]
 imagenesPrueba, probabilidadesPrueba = cargaData.cargar_datos_pruebas("dataset/test/", nombreCategorias,
                                                                       cantidaDatosPruebas, cantidaDatosEntrenamiento, ancho, alto)
 # Cargar el modelo desde el archivo guardado
-loaded_model = load_model('models/modeloTres.h5')
+loaded_model = load_model('models/modeloCinco.h5')
 
 # Predecir en datos de prueba
 loaded_y_pred = loaded_model.predict(imagenesPrueba)
