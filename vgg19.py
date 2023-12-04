@@ -65,10 +65,10 @@ resumen(conv_base)
 conv_base.trainable = False
 
 model = Sequential()
-model.add(conv_base)        # modelo base agradado como una capa!
-model.add(Flatten())
-model.add(Dense(256, activation='relu'))
-model.add(Dense(1, activation='softmax'))
+model.add(conv_base)  # convolutional base
+model.add(Reshape((65536,)))  # reshape the output
+model.add(Dense(128, activation='relu'))
+model.add(Dense(len(nombreCategorias), activation="softmax"))
 
 resumen(model)
 
