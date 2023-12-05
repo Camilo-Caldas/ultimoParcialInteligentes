@@ -22,7 +22,6 @@ import glob
 from matplotlib import pyplot as plt
 import warnings
 warnings.filterwarnings('ignore',category=FutureWarning)
-from datetime import datetime
 from keras.callbacks import ModelCheckpoint
 
 ancho = 256

@@ -15,14 +15,14 @@ import matplotlib.pyplot as plt
 
 #Configurable parameters
 model_builder = keras.applications.xception.Xception
-img_size = (256, 256)
+img_size = (299, 299)
 preprocess_input = keras.applications.xception.preprocess_input
 decode_predictions = keras.applications.xception.decode_predictions #Función de decodificación de predicciones:
 
 last_conv_layer_name = "block14_sepconv2_act" #Nombre de la última capa convolucional:
 
 # The local path to our target image
-img_path = "./dataset/train/COVID/0.png"
+img_path = "./dataset/train/COVID/1.png"
 
 
 display(Image(img_path))
@@ -101,7 +101,7 @@ plt.show()
 
 
 #Create a superimposed visualization
-def save_and_display_gradcam(img_path, heatmap, cam_path="cam.jpg", alpha=0.4):
+def save_and_display_gradcam(img_path, heatmap, cam_path="covid_cam.jpg", alpha=0.4):
     # Load the original image
     img = keras.utils.load_img(img_path)
     img = keras.utils.img_to_array(img)
@@ -126,6 +126,7 @@ def save_and_display_gradcam(img_path, heatmap, cam_path="cam.jpg", alpha=0.4):
     superimposed_img = keras.utils.array_to_img(superimposed_img)
 
     # Save the superimposed image
+    cam_path = "./mapas_calor/"+cam_path
     superimposed_img.save(cam_path)
 
     # Display Grad CAM
