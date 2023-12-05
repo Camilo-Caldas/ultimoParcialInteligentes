@@ -1,16 +1,6 @@
-# from keras.applications import VGG19
-# from sklearn.model_selection import train_test_split
-# import tensorflow as tf
-# import keras
-# import numpy as np
-# import cv2
-# ###Importar componentes de la red neuronal
-# from keras.models import Sequential, Model
-# from keras.layers import InputLayer,Input,Conv2D, MaxPool2D,Reshape,Dense,Flatten,LeakyReLU, Dropout, GlobalMaxPooling2D
-# import cargaData
-# from sklearn.metrics import f1_score
-# from keras.optimizers import Adagrad
-
+import os
+import random
+import shutil
 from keras.layers import Input,Dense,Flatten
 from keras.models import Model
 from keras.optimizers import Adam
@@ -60,16 +50,6 @@ def resumen(model=None):
     print('Total No-Trainable Parameters : ', count-count_trainable)
     
   
-# vgg19=None
-
-# vgg19 = VGG19(weights='imagenet',
-#                   include_top=True,
-#                   input_shape=(224, 224, 3))
-
-# resumen(vgg19)
-
-# if vgg19 != None:
-#     del vgg19
 
 # setting image size 
 IMAGE_SIZE = [ 256 , 256 , 3 ]
@@ -132,89 +112,56 @@ test_datagen = ImageDataGenerator(
 train_path = 'dataset/train'
 test_path = 'dataset/test'
 
-# train data
-train_set = train_datagen.flow_from_directory(train_path,
-                                            target_size = ( 256 , 256 ),
-                                            batch_size = 900,
-                                            class_mode = 'categorical')
+# Define the paths
+subset_train_path = "subset_train"
+subset_test_path = "subset_test"
 
-# test data
-test_set = test_datagen.flow_from_directory(test_path,
-                                             target_size = ( 256 , 256 ),
-                                            batch_size = 900,
-                                            class_mode = 'categorical')
+# Function to create a subset of the data
+def create_subset(original_path, subset_path, subset_fraction):
+    classes = os.listdir(original_path)
+    os.makedirs(subset_path, exist_ok=True)
+
+    for class_name in classes:
+        class_path = os.path.join(original_path, class_name)
+        subset_class_path = os.path.join(subset_path, class_name)
+        os.makedirs(subset_class_path, exist_ok=True)
+
+        images = os.listdir(class_path)
+        random.shuffle(images)
+        subset_size = int(subset_fraction * len(images))
+        selected_images = images[:subset_size]
+
+        for image in selected_images:
+            original_image_path = os.path.join(class_path, image)
+            subset_image_path = os.path.join(subset_class_path, image)
+            shutil.copyfile(original_image_path, subset_image_path)
+
+# Create a subset of the training data
+create_subset(train_path, subset_train_path, subset_fraction=0.8)
+
+# Create a subset of the test data
+create_subset(test_path, subset_test_path, subset_fraction=0.2)
+
+# Use flow_from_directory with the subset
+train_set = train_datagen.flow_from_directory(subset_train_path,
+                                              target_size=(256, 256),
+                                              batch_size=300,
+                                              class_mode='categorical')
+
+test_set = test_datagen.flow_from_directory(subset_test_path,
+                                            target_size=(256, 256),
+                                            batch_size=300,
+                                            class_mode='categorical')
+
+
 
 model.fit( train_set,
                           validation_data = test_set,
-                          epochs = 10,
-                          steps_per_epoch = 5,
-                          validation_steps = 32,
+                          epochs = 30,
+                          steps_per_epoch = 25,
+                          validation_steps = 3,
                           verbose = 2)
 
-ruta = "models/modeloVGG19.h5"
+ruta = "models/modeloVGG19Full.h5"
 model.save(ruta)
 model.summary()
-# resumen(conv_base)    
-# conv_base.trainable = False
-
-
-# model = Sequential()
-# model.add(conv_base)        # modelo base agradado como una capa!
-# model.add(Flatten())
-# model.add(Reshape(formaImagen))
-# model.add(Dense(128, activation='relu'))
-# #model.add(Reshape(formaImagen))
-# model.add(Dense(len(nombreCategorias), activation="softmax"))
-
-
-
-
-# resumen(model)
-
-# model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
-
-# model.fit(x=imagenes, y=probabilidades, epochs=30, batch_size=300)
-
-# width_shape = 256
-# height_shape = 256
-# num_classes = len(nombreCategorias)
-# epochs = 50
-# batch_size = 32 
-
-# image_input = Input(shape=(width_shape, height_shape, numeroCanales))
-
-# m_VGG19 = VGG19(input_tensor=image_input, include_top=False,weights='imagenet')
-
-# m_VGG19.summary()
-
-# last_layer = m_VGG19.layers[-1].output
-# x= Flatten(name='flatten')(last_layer)
-# x = Dense(10, activation='relu', name='fc1')(x)
-# x=Dropout(0.3)(x)
-# x = Dense(10, activation='relu', name='fc2')(x)
-# x=Dropout(0.3)(x)
-# out = Dense(num_classes, activation='softmax', name='output')(x)
-# custom_model = Model(image_input, out)
-# custom_model.summary()
-
-# # freeze all the layers except the dense layers
-# for layer in custom_model.layers[:-6]:
-# 	layer.trainable = False
-
-# custom_model.summary()
-
-# custom_model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-
-# ruta = "models/modeloVGG19.h5"
-# custom_model.save(ruta)
-# custom_model.summary()
-
-# imagenesPrueba, probabilidadesPrueba = cargaData.cargar_datos_pruebas("dataset/test/", nombreCategorias,
-#                                                                       cantidaDatosPruebas, cantidaDatosEntrenamiento, ancho, alto)
-
-
-
-# resultados = custom_model.evaluate(x=imagenesPrueba, y=probabilidadesPrueba)
-
-# # Evaluar el modelo en datos de prueba y mostrar métricas
-# print("Accuracy=",resultados[1])
