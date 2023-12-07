@@ -20,3 +20,12 @@ class prediccion():
         print("Predicciones=",predicciones)
         clases_mayores=np.argmax(predicciones,axis=1)
         return clases_mayores[0]
+    
+    # def predecir(self,imagen):
+    #     imagenes_cargadas=[]
+    #     imagenes_cargadas.append(imagen)
+    #     imagenes_cargadas_npa=np.array(imagenes_cargadas)
+    #     predicciones=self.modelo.predict(x=imagenes_cargadas_npa)
+    #     print("Predicciones=",predicciones)
+    #     clases_mayores=np.argmax(predicciones,axis=1)
+    #     return clases_mayores[0]
