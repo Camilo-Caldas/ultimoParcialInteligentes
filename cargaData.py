@@ -51,3 +51,27 @@ def cargar_datos_pruebas(ruta_origen,nombre_categorias,limite, limite_inferior,a
     return imagenes_entrenamiento, valores_esperados
 
 
+def cargar_datos_pruebas_vgg(ruta_origen, nombre_categorias, limite, limite_inferior, ancho, alto):
+    imagenes_cargadas = []
+    valor_esperado = []
+    index = 0
+
+    for categoria in nombre_categorias:
+        for id_imagen in range(limite_inferior[index], limite[index]):
+            ruta = ruta_origen + str(categoria) + "/" + str(id_imagen) + ".png"
+            imagen = cv2.imread(ruta)
+            imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)  # Convertir a RGB (porque VGG generalmente trabaja con imágenes en este formato)
+            imagen = cv2.resize(imagen, (ancho, alto))  # Redimensionar la imagen
+            imagenes_cargadas.append(imagen)
+
+            # Crear la etiqueta one-hot correspondiente
+            probabilidades = np.zeros(len(nombre_categorias))
+            probabilidades[index] = 1
+            valor_esperado.append(probabilidades)
+
+        index += 1
+
+    imagenes_entrenamiento = np.array(imagenes_cargadas)
+    valores_esperados = np.array(valor_esperado)
+    return imagenes_entrenamiento, valores_esperados
+
