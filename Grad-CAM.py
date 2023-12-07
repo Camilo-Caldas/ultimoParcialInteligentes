@@ -152,7 +152,7 @@ plt.show()
 
 
 #Create a superimposed visualization
-def save_and_display_gradcam(img_path, heatmap, cam_path="Pneumonia4000_cam.jpg", alpha=0.4):
+def save_and_display_gradcam(img_path, heatmap, cam_path="Pneumonia5000_cam.jpg", alpha=0.4):
     # Load the original image
     img = keras.utils.load_img(img_path)
     img = keras.utils.img_to_array(img)
