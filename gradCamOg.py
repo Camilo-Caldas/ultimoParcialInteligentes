@@ -9,92 +9,6 @@ from keras.models import load_model
 from IPython.display import Image, display
 import prediccion
 
-# # Cargar el modelo desde el archivo guardado
-# model = load_model('models/modeloCinco.h5', compile=False)
-
-# # Dimensiones de entrada esperadas por el modelo
-# img_size = (256, 256)
-
-# # Nombre de la última capa convolucional
-# last_conv_layer_name = "capa_5"
-
-# def preprocess_image(img_path, size):
-#     img = keras.utils.load_img(img_path, target_size=size)
-#     img_array = keras.utils.img_to_array(img)
-#     img_array = np.expand_dims(img_array, axis=0)
-#     img_array /= 255.0
-#     return img_array
-
-# def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
-#     last_conv_layer = model.get_layer(last_conv_layer_name)
-#     grad_model = keras.models.Model([model.inputs], [last_conv_layer.output, model.output])
-
-#     with tf.GradientTape() as tape:
-#         last_conv_layer_output, preds = grad_model(img_array)
-#         if preds is None:
-#             raise ValueError("Model output should not be None for Grad-CAM")
-
-#         pred_index = tf.argmax(preds[0])
-#         class_channel = preds[:, pred_index]
-
-#     grads = tape.gradient(class_channel, last_conv_layer_output)
-#     pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-
-#     heatmap = tf.reduce_mean(tf.multiply(last_conv_layer_output, pooled_grads), axis=-1)
-#     heatmap = np.maximum(heatmap, 0)
-#     heatmap /= tf.reduce_max(heatmap)
-
-#     return heatmap.numpy()
-
-# def save_and_display_gradcam(img_path, heatmap, cam_path="cam.jpg", alpha=0.4):
-#     img = keras.utils.load_img(img_path)
-#     img = keras.utils.img_to_array(img)
-
-#     heatmap = np.uint8(255 * heatmap)
-#     jet = mpl.cm.get_cmap("viridis")
-#     jet_colors = jet(np.arange(256))[:, :3]
-#     jet_heatmap = jet_colors[heatmap]
-
-#     jet_heatmap = keras.utils.array_to_img(jet_heatmap)
-#     jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
-#     jet_heatmap = keras.utils.img_to_array(jet_heatmap)
-
-#     superimposed_img = jet_heatmap * alpha + img
-#     superimposed_img = keras.utils.array_to_img(superimposed_img)
-
-#     superimposed_img.save(cam_path)
-#     display(Image(cam_path))
-
-# # Ruta de la imagen a visualizar
-# img_path = 'dataset/test/Viral Pneumonia/5000.png'
-
-# # Preparar la imagen
-# img_array = preprocess_image(img_path, size=img_size)
-
-# # Generar el mapa de calor Grad-CAM
-# heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name)
-
-# # Mostrar el mapa de calor Grad-CAM
-# plt.imshow(heatmap, cmap='viridis')
-# plt.show()
-
-# # Guardar y mostrar Grad-CAM superpuesto en la imagen original
-# save_and_display_gradcam(img_path, heatmap)
-# Cargar el modelo desde el archivo guardado
-model = load_model('models/modeloUno.h5')
-clases=["COVID","LUNG OPACITY","NORMAL","VIRAL PNEUMONIA"]
-
-ancho = 256
-alto = 256
-
-# Dimensiones de entrada esperadas por el modelo
-img_size = (256, 256)
-
-# Nombre de la última capa convolucional
-last_conv_layer_name = "capa_2"
-
-
-#     return img_array
 
 def preprocess_image(img_path, size):
     img = keras.utils.load_img(img_path, target_size=size)
@@ -135,23 +49,10 @@ def preprocess_image(img_path, size):
 
 
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name, imagen):
-    # Extraer la última capa convolucional del modelo
-    #last_conv_layer = model.get_layer(last_conv_layer_name)
-    # print(last_conv_layer.name)
-    # print(model.inputs)
-    #last_conv_model = keras.models.Model(model.inputs, last_conv_layer.output)
     grad_model = keras.models.Model(
         model.inputs, [model.get_layer(last_conv_layer_name).output, model.output]
     )
-
-    # Calcular las activaciones de la última capa convolucional
-    #last_conv_activations = last_conv_model.predict(img_array)
-
-    # Obtener la predicción del modelo
-    #preds = last_conv_model.predict(img_array)
-
-    #class_idx = np.argmax(preds[0])
-    #print('preds size',len(preds))
+    
     imagen = cv2.imread(imagen)
     imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
     imagen = cv2.resize(imagen, (256, 256))
@@ -170,7 +71,6 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, imagen):
     # # Then, we compute the gradient of the top predicted class for our input image
     # # with respect to the activations of the last conv layer
     with tf.GradientTape() as tape:
-        #last_conv_layer_output = last_conv_model(img_array)
         last_conv_layer_output, preds = grad_model(img_array)
         
         class_idx = tf.argmax(preds[0])
@@ -197,26 +97,12 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, imagen):
     return heatmap.numpy()
 
 
-
-    # # Calcular el gradiente respecto a la clase predicha
-    # grads = model.optimizer.get_gradients(model.output[:, class_idx], last_conv_layer.output)[0]
-    # pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-    # heatmap = tf.reduce_mean(tf.multiply(last_conv_activations, pooled_grads), axis=-1)
-
-    # # Normalizar el mapa de calor entre 0 y 1
-    # heatmap = np.maximum(heatmap, 0)
-    # heatmap /= np.max(heatmap)
-
-    # return heatmap
-
-
-
-def save_and_display_gradcam(img_path, heatmap, cam_path="Neumonia2.jpg", alpha=0.4):
-    # Load the original image
+def save_and_display_gradcam(img_path, heatmap, cam_path="Lung2.jpg", alpha=0.4):
+    # Cargar la imagen original
     img = keras.utils.load_img(img_path)
     img = keras.utils.img_to_array(img)
 
-    # Rescale heatmap to a range 0-255
+    # Reescalar heatmap entre el rango 0-255
     heatmap = np.uint8(255 * heatmap)
 
     # Use jet colormap to colorize heatmap
@@ -242,8 +128,21 @@ def save_and_display_gradcam(img_path, heatmap, cam_path="Neumonia2.jpg", alpha=
     # Display Grad CAM
     display(Image(cam_path))
 
+# Cargar el modelo desde el archivo guardado
+model = load_model('models/modeloTres.h5')
+clases=["COVID","LUNG OPACITY","NORMAL","VIRAL PNEUMONIA"]
+
+ancho = 256
+alto = 256
+
+# Dimensiones de entrada esperadas por el modelo
+img_size = (256,256)
+
+# Nombre de la última capa convolucional
+last_conv_layer_name = "capa_2"
+
 # Ruta de la imagen a visualizar
-img_path = 'dataset/test/COVID/5000.png'
+img_path = 'dataset/test/Viral Pneumonia/4500.png'
 
 # Preparar la imagen
 img_array = preprocess_image(img_path, size=img_size)
