@@ -168,3 +168,5 @@ pyvenv.cfg
 /subset_test/
 /subset_train/
 cam.jpg
+Lung2.jpg
+/mapas_calor/
